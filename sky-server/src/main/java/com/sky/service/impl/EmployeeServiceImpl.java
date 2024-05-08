@@ -123,4 +123,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setUpdateTime(LocalDateTime.now());
         employeeMapper.update(employee);
     }
+
+    public void test(){
+
+    }
 }
