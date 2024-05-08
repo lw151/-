@@ -50,7 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //密码比对
         //进行md5加密，然后再进行比对
-        password=DigestUtils.md5DigestAsHex(password.getBytes());
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
         if (!password.equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
@@ -74,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void saveEmployee(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO, employee);
         employee.setStatus(StatusConstant.ENABLE);
 
         employee.setCreateTime(LocalDateTime.now());
@@ -82,7 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setCreateUser(BaseContext.getCurrentId());
         employee.setUpdateUser(BaseContext.getCurrentId());
         //默认密码
-        String password=DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes());
+        String password = DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes());
         employee.setPassword(password);
 
         employeeMapper.insert(employee);
@@ -90,12 +90,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
-        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
         PageResult pageResult = new PageResult();
 
-        Page<Employee>page=employeeMapper.pageQuery(employeePageQueryDTO.getName());
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO.getName());
         pageResult.setTotal(page.getTotal());
         pageResult.setRecords(page.getResult());
         return pageResult;
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Employee employee = Employee.builder().status(status).
+                id(id).updateTime(LocalDateTime.now()).updateUser(BaseContext.getCurrentId()).build();
+        employeeMapper.update(employee);
+
     }
 }
